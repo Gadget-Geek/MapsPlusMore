@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="@string/lat_txtView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lat_id" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:text=""
+        android:ems="10"
+        android:id="@+id/insert_lat_edit" />
+
+    <TextView
+        android:text="@string/long_txtView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/long_id" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:text=""
+        android:ems="10"
+        android:id="@+id/insert_long_edit" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="339dp">
+
+        <Button
+            android:text="@string/add_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_btn"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+
+</LinearLayout>
