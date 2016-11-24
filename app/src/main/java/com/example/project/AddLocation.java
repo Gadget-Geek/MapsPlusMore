@@ -1,6 +1,7 @@
 package com.example.project;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,20 +13,24 @@ public class AddLocation extends Activity {
     private double longitude;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_location);
 
-        Button addLocation = (Button) findViewById(R.id.add_btn);
+        Button addLocation = (Button)findViewById(R.id.add_btn);
         addLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText get_lat = (EditText) findViewById(R.id.insert_lat_edit);
+
+                Intent intent = new Intent(AddLocation.this, MapsActivity.class);
+
+                EditText get_lat = (EditText)findViewById(R.id.insert_lat_edit);
                 latitude = Double.parseDouble(get_lat.getText().toString());
 
-                EditText get_long = (EditText) findViewById(R.id.insert_long_edit);
+                EditText get_long = (EditText)findViewById(R.id.insert_long_edit);
                 longitude = Double.parseDouble(get_long.getText().toString());
 
+                finish();
             }
         });
     }

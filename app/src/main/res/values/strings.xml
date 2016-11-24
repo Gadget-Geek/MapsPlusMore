@@ -5,4 +5,5 @@
     <string name="lat_txtView">Latitude</string>
     <string name="long_txtView">Longitude</string>
     <string name="add_txt">Add</string>
+    <string name="delete_location_txt">Delete Location</string>
 </resources>
