@@ -1,8 +1,0 @@
-<resources>
-    <string name="app_name">Project</string>
-    <string name="title_activity_maps">Map</string>
-    <string name="add_location_txt">Add Location</string>
-    <string name="lat_txtView">Latitude</string>
-    <string name="long_txtView">Longitude</string>
-    <string name="add_txt">Add</string>
-</resources>
