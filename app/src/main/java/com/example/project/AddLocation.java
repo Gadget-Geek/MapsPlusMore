@@ -9,27 +9,34 @@ import android.widget.EditText;
 
 public class AddLocation extends Activity {
 
-    private double latitude;
-    private double longitude;
+    public double latitude;
+    public double longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_location);
 
+        // set up add button
         Button addLocation = (Button)findViewById(R.id.add_btn);
         addLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Intent intent = new Intent(AddLocation.this, MapsActivity.class);
-
-                EditText get_lat = (EditText)findViewById(R.id.insert_lat_edit);
+                // set up latitude box
+                EditText get_lat = (EditText) findViewById(R.id.insert_lat_edit);
                 latitude = Double.parseDouble(get_lat.getText().toString());
 
-                EditText get_long = (EditText)findViewById(R.id.insert_long_edit);
+                // set up longitude box
+                EditText get_long = (EditText) findViewById(R.id.insert_long_edit);
                 longitude = Double.parseDouble(get_long.getText().toString());
 
+                // send values via intent
+                Intent sendValues = new Intent();
+                sendValues.putExtra("lat", latitude);
+                sendValues.putExtra("lon", longitude);
+
+                // finish, return
                 finish();
             }
         });
