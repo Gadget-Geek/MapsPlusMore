@@ -3,6 +3,7 @@ package com.example.project;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.MainThread;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,26 +18,21 @@ public class AddLocation extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_location);
 
-        // set up add button
+        final LocationDBHelper locationDBHelper = new LocationDBHelper(this);
+
         Button addLocation = (Button)findViewById(R.id.add_btn);
         addLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                // set up latitude box
-                EditText get_lat = (EditText) findViewById(R.id.insert_lat_edit);
+                EditText get_lat = (EditText)findViewById(R.id.insert_lat_edit);
                 latitude = Double.parseDouble(get_lat.getText().toString());
 
-                // set up longitude box
-                EditText get_long = (EditText) findViewById(R.id.insert_long_edit);
+                EditText get_long = (EditText)findViewById(R.id.insert_long_edit);
                 longitude = Double.parseDouble(get_long.getText().toString());
 
-                // send values via intent
-                Intent sendValues = new Intent();
-                sendValues.putExtra("lat", latitude);
-                sendValues.putExtra("lon", longitude);
+                locationDBHelper.addNewLocation(latitude, longitude);
 
-                // finish, return
                 finish();
             }
         });

@@ -2,6 +2,7 @@ package com.example.project;
 
 import android.*;
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -10,8 +11,11 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -46,8 +50,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private SupportMapFragment mapFragment;
     private Marker currentLocationMarker;
     private List<LatLng> listOfMarkers;
-
-
+    private LocationDBHelper locationDBHelper;
+    private ArrayList<com.example.project.Location> locations;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -55,11 +59,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setupLocationServices();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        locationDBHelper = new LocationDBHelper(this);
+        locations = new ArrayList<>(locationDBHelper.getAllLocations());
 
+        if(locations.size() == 0){
+            locationDBHelper.addNewLocation(23.11, 43.54);
+            locationDBHelper.addNewLocation(-1.32, -3.54);
+            locationDBHelper.addNewLocation(-15.11, 42.11);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -145,9 +157,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationRequest.setFastestInterval(3000);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-        Toast.makeText(this, "Current location set!", Toast.LENGTH_SHORT).show();
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+            Toast.makeText(this, "Current location set!", Toast.LENGTH_SHORT).show();
 
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+        }
     }
 
     @Override
@@ -162,11 +183,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switch (item.getItemId()) {
             case R.id.add_location:
                 Intent intent = new Intent(MapsActivity.this, AddLocation.class);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 return true;
             case R.id.delete_location:
                 intent = new Intent(MapsActivity.this, DeleteLocation.class);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -185,8 +206,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markerOptions.title("Current Position");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
         currentLocationMarker = mMap.addMarker(markerOptions);
-
-        Toast.makeText(this, "Location Changed", Toast.LENGTH_SHORT).show();
 
         CameraPosition cameraPosition = new CameraPosition.Builder().target(coordinates).zoom(14).build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
