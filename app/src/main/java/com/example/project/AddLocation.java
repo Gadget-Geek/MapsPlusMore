@@ -25,6 +25,8 @@ public class AddLocation extends Activity {
             @Override
             public void onClick(View view) {
 
+                Intent intent = new Intent(AddLocation.this, MapsActivity.class);
+
                 EditText get_lat = (EditText)findViewById(R.id.insert_lat_edit);
                 latitude = Double.parseDouble(get_lat.getText().toString());
 
@@ -34,6 +36,7 @@ public class AddLocation extends Activity {
                 locationDBHelper.addNewLocation(latitude, longitude);
 
                 finish();
+                startActivity(intent);
             }
         });
     }
