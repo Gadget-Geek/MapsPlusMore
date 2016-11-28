@@ -2,23 +2,31 @@ package com.example.project;
 
 public class Location {
 
-    private int LocationID;
-    private double latitude;
-    private double longitude;
+    private int streetNumber;
+    private String streetName;
+    private String city;
+    private String province;
+    private String nameOfLocation;
 
-    public Location(int LocationID, double lat, double lon){
+    public Location(String nameOfLocation, int streetNumber, String streetName, String city, String province){
 
-        setLocationID(LocationID);
-        setLatitude(lat);
-        setLongitude(lon);
+        setStreetNumber(streetNumber);
+        setStreetName(streetName);
+        setCity(city);
+        setProvince(province);
+        setNameOfLocation(nameOfLocation);
     }
 
-    public int getLocationID(){ return LocationID; }
-    public double getLatitude(){ return latitude; }
-    public double getLongitude(){ return longitude; }
+    public int getStreetNumber(){ return streetNumber; }
+    public String getStreetName(){ return streetName; }
+    public String getCity(){ return city; }
+    public String getProvince(){ return province; }
+    public String getNameOfLocation(){ return nameOfLocation; }
 
-    public void setLocationID(int LocationID ) { this.LocationID = LocationID; }
-    public void setLatitude(double latitude) { this.latitude = latitude; }
-    public void setLongitude(double longitude) { this.longitude = longitude; }
+    public void setStreetNumber(int streetNumber) {this.streetNumber = streetNumber; }
+    public void setStreetName(String streetName) {this.streetName = streetName; }
+    public void setCity(String city) {this.city = city; }
+    public void setProvince(String province) {this.province = province; }
+    public void setNameOfLocation(String nameOfLocation) {this.nameOfLocation = nameOfLocation;}
 
 }

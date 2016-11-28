@@ -2,8 +2,11 @@
     <string name="app_name">Project</string>
     <string name="title_activity_maps">Map</string>
     <string name="add_location_txt">Add Location</string>
-    <string name="lat_txtView">Latitude</string>
-    <string name="long_txtView">Longitude</string>
-    <string name="add_txt">Add</string>
+    <string name="add_txt">Add Location</string>
     <string name="delete_location_txt">Delete Location</string>
+    <string name="street_number_txt">Street Number:</string>
+    <string name="street_name_txt">Street Name:</string>
+    <string name="set_name_to_address">Set Name to Address:</string>
+    <string name="city">City:</string>
+    <string name="province">Province:</string>
 </resources>

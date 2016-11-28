@@ -1,9 +1,11 @@
 package com.example.project;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.identity.intents.Address;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -46,6 +49,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -76,6 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locations = new ArrayList<>(locationDBHelper.getAllLocations());
     }
 
+    /* Sets up the location services */
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void setupLocationServices() {
         requestLocationPermissions();
@@ -87,6 +92,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    // Requests location permission from the user
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void requestLocationPermissions() {
         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -108,13 +114,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        //checks for location permission if granted by the user.
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
         }
 
+        //initializes the Google API Client and connects
         buildGoogleApiClient();
         googleApiClient.connect();
 
+        /*
+        When a marker is clicked, the app will calculate the distance and time
+        required for the user to go between their current path and the added path
+        */
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -124,16 +136,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         for(int i = 0; i < locations.size(); i++){
+
+            int streetNum = locations.get(i).getStreetNumber();
+            String streetName = locations.get(i).getStreetName();
+            String city = locations.get(i).getCity();
+            String province = locations.get(i).getProvince();
+            String nameOfLoc = locations.get(i).getNameOfLocation();
+
+            double latitude = 0;
+            double longitude = 0;
+
+            //Requires a Geocoder to be present in the user's phone.
+            //Will retrieve the address string and convert into lat/lng
+            if(Geocoder.isPresent()){
+                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                String address = streetNum + streetName + city + province;
+
+                try {
+                    List<android.location.Address> listOfAddress = geocoder.getFromLocationName(address, 1);
+                    for(android.location.Address addr: listOfAddress) {
+                        latitude = addr.getLatitude();
+                        longitude = addr.getLongitude();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //Adds markers to the map till the array list is depleted
             if(locations.size() != 0){
-                coordinates = new LatLng(locations.get(i).getLatitude(), locations.get(i).getLongitude());
+                coordinates = new LatLng(latitude, longitude);
                 MarkerOptions marker = new MarkerOptions();
                 marker.position(coordinates);
+                marker.title(nameOfLoc);
                 marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
                 mMap.addMarker(marker);
             }
         }
     }
 
+    //builds the Google API Client
     protected synchronized void buildGoogleApiClient() {
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -152,10 +194,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Location lastLocation = null;
 
+        //checks for permission to use fine location
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         }
 
+
+        //if the last location is not null, the coordinates will get its lat/lng attributes and set on map
         if (lastLocation != null) {
             coordinates = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
             MarkerOptions markerOptions = new MarkerOptions();
@@ -165,6 +210,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             currentLocationMarker = mMap.addMarker(markerOptions);
         }
 
+        //Creating a new location request to set current location
         locationRequest = new LocationRequest();
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
@@ -180,6 +226,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    //Menu items, add and delete locations, initalized here
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -203,6 +250,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    //When location is changed, camera position is moved to new location.
     @Override
     public void onLocationChanged(Location location) {
 
@@ -232,6 +280,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Toast.makeText(this, "onConnectionFailed", Toast.LENGTH_SHORT).show();
     }
 
+    //Calculates the distance and time between two points
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void calculate(LatLng position){
 
@@ -260,32 +309,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Toast.makeText(this, "Distance: " + distance + " m, Time: " + time + " min.", Toast.LENGTH_SHORT).show();
     }
 
+    /*
+    DISCLAIMER: Most of the methods from this point onwards as well as the DataParser.java class
+    was done using the help of many users from StackOverFlow. 
+     */
 
+    //Gets the Google Maps API URl set up to be downloaded.
     private String getUrl(LatLng origin, LatLng dest) {
 
-        // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+        String original_point = "origin=" + origin.latitude + "," + origin.longitude;
+        String destination_point = "destination=" + dest.latitude + "," + dest.longitude;
 
-        // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-
-        // Sensor enabled
         String sensor = "sensor=false";
-
-        // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor;
-
-        // Output format
+        String parameters = original_point + "&" + destination_point + "&" + sensor;
         String output = "json";
 
-        // Building the url to the web service
         String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
 
         return url;
     }
 
+    //Fetches the URL download using AsyncTask
     private class FetchUrl extends AsyncTask<String, Void, String> {
-
         @Override
         protected String doInBackground(String... url) {
 
@@ -295,7 +340,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
                 // Fetching the data from web service
                 data = downloadUrl(url[0]);
-                Log.d("Background Task data", data.toString());
             } catch (Exception e) {
                 Log.d("Background Task", e.toString());
             }
@@ -304,8 +348,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected void onPostExecute(String result) {
-            super.onPostExecute(result);
 
+            super.onPostExecute(result);
             ParserTask parserTask = new ParserTask();
 
             // Invokes the thread for parsing the JSON data
@@ -314,9 +358,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    //Downloads the URL and sets the data into a string
     private String downloadUrl(String strUrl) throws IOException {
         String data = "";
-        InputStream iStream = null;
+        InputStream inputStream = null;
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(strUrl);
@@ -328,25 +373,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             urlConnection.connect();
 
             // Reading data from url
-            iStream = urlConnection.getInputStream();
+            inputStream = urlConnection.getInputStream();
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
-            StringBuffer sb = new StringBuffer();
+            StringBuffer stringBuffer = new StringBuffer();
 
             String line = "";
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuffer.append(line);
             }
 
-            data = sb.toString();
-            Log.d("downloadUrl", data.toString());
-            br.close();
+            data = stringBuffer.toString();
+            bufferedReader.close();
 
         } catch (Exception e) {
             Log.d("Exception", e.toString());
         } finally {
-            iStream.close();
+            inputStream.close();
             urlConnection.disconnect();
         }
         return data;
@@ -363,14 +407,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             try {
                 jObject = new JSONObject(jsonData[0]);
-                Log.d("ParserTask",jsonData[0].toString());
                 DataParser parser = new DataParser();
-                Log.d("ParserTask", parser.toString());
 
                 // Starts parsing data
                 routes = parser.parse(jObject);
-                Log.d("ParserTask","Executing routes");
-                Log.d("ParserTask",routes.toString());
 
             } catch (Exception e) {
                 Log.d("ParserTask",e.toString());
@@ -408,9 +448,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 lineOptions.addAll(points);
                 lineOptions.width(10);
                 lineOptions.color(Color.RED);
-
-                Log.d("onPostExecute","onPostExecute lineoptions decoded");
-
             }
 
             // Drawing polyline in the Google Map for the i-th route

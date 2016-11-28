@@ -5,10 +5,10 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:text="@string/lat_txtView"
+        android:text="@string/street_number_txt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/lat_id" />
+        android:id="@+id/strNum_id" />
 
     <EditText
         android:layout_width="match_parent"
@@ -16,21 +16,63 @@
         android:inputType="numberDecimal|numberSigned"
         android:text=""
         android:ems="10"
-        android:id="@+id/insert_lat_edit" />
+        android:id="@+id/insert_street_num" />
 
     <TextView
-        android:text="@string/long_txtView"
+        android:text="@string/street_name_txt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/long_id" />
+        android:id="@+id/strName_id" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal|numberSigned"
+        android:inputType="textPersonName"
         android:text=""
         android:ems="10"
-        android:id="@+id/insert_long_edit" />
+        android:id="@+id/insert_street_name" />
+
+    <TextView
+        android:text="@string/city"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/city_id" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text=""
+        android:ems="10"
+        android:id="@+id/insert_city" />
+
+    <TextView
+        android:text="@string/province"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/province_id" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text=""
+        android:ems="10"
+        android:id="@+id/insert_province" />
+
+    <TextView
+        android:text="@string/set_name_to_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nameOfAddress_id" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text=""
+        android:ems="10"
+        android:id="@+id/insert_name_address" />
 
     <RelativeLayout
         android:layout_width="match_parent"

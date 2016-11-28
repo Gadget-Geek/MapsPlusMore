@@ -16,9 +16,11 @@ public class LocationDBHelper extends SQLiteOpenHelper{
 
     private static final String CREATE_STATEMENT = "" +
             "create table locations(" +
-            " locID integer primary key autoincrement," +
-            " latitude real not null," +
-            " longitude real not null)";
+            " name text primary key," +
+            " strNum integer not null," +
+            " strName text not null," +
+            " city text not null," +
+            " province text not null)";
 
     private static final String DROP_DATABASE = "" +
             "drop table locations";
@@ -41,13 +43,13 @@ public class LocationDBHelper extends SQLiteOpenHelper{
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         ArrayList<Location> coordinateResults = new ArrayList<>();
 
-        String[] columns = new String[] {"locID", "latitude", "longitude"};
+        String[] columns = new String[] {"name", "strNum", "strName",  "city", "province"};
 
         String where = "";
         String[] whereArgs = new String[] {};
         String groupBy = "";
         String groupArgs = "";
-        String orderBy = "locID";
+        String orderBy = "name";
 
         Cursor cursor = sqLiteDatabase.query("locations", columns, where, whereArgs,
                 groupBy, groupArgs, orderBy);
@@ -56,28 +58,30 @@ public class LocationDBHelper extends SQLiteOpenHelper{
 
 
         while(!cursor.isAfterLast()){
-            int LocID = cursor.getInt(0);
-            double latitude = cursor.getDouble(1);
-            double longitude = cursor.getDouble(2);
+            String nameOfLocation = cursor.getString(0);
+            int streetNumber = cursor.getInt(1);
+            String streetName = cursor.getString(2);
+            String city = cursor.getString(3);
+            String province = cursor.getString(4);
 
-            coordinateResults.add(new Location(LocID, latitude, longitude));
+            coordinateResults.add(new Location(nameOfLocation, streetNumber, streetName, city, province));
             cursor.moveToNext();
         }
         cursor.close();
         return coordinateResults;
     }
 
-    public List<Integer> getAllLocationID() {
+    public List<String> getAllLocationNames() {
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
-        ArrayList<Integer> IDList = new ArrayList<>();
+        ArrayList<String> IDList = new ArrayList<>();
 
-        String[] columns = new String[] {"locID"};
+        String[] columns = new String[] {"name"};
 
         String where = "";
         String[] whereArgs = new String[] {};
         String groupBy = "";
         String groupArgs = "";
-        String orderBy = "locID";
+        String orderBy = "name";
 
         Cursor cursor = sqLiteDatabase.query("locations", columns, where, whereArgs,
                 groupBy, groupArgs, orderBy);
@@ -85,8 +89,8 @@ public class LocationDBHelper extends SQLiteOpenHelper{
         cursor.moveToFirst();
 
         while(!cursor.isAfterLast()){
-            int LocID = cursor.getInt(0);
-            IDList.add(LocID);
+            String LocName = cursor.getString(0);
+            IDList.add(LocName);
             cursor.moveToNext();
         }
         cursor.close();
@@ -94,21 +98,25 @@ public class LocationDBHelper extends SQLiteOpenHelper{
         return IDList;
     }
 
-    public void deleteLocation(int LocID){
+    public void deleteLocation(String name){
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        sqLiteDatabase.delete("locations", "locID=?", new String[] {Integer.toString(LocID)});
+        sqLiteDatabase.delete("locations", "name=?", new String[] {name});
     }
 
-    public Location addNewLocation(double latitude, double longitude){
-        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+    public Location addNewLocation(String nameOfLocation, int streetNumber, String streetName, String city,
+                                                                                String province){
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put("latitude", latitude);
-        contentValues.put("longitude", longitude);
+        contentValues.put("name", nameOfLocation);
+        contentValues.put("strNum", streetNumber);
+        contentValues.put("strName", streetName);
+        contentValues.put("city", city);
+        contentValues.put("province", province);
 
-        int LocID = (int) sqLiteDatabase.insert("locations", null, contentValues);
+        sqLiteDatabase.insert("locations", null, contentValues);
 
-        Location location = new Location(LocID, latitude, longitude);
+        Location location = new Location(nameOfLocation, streetNumber, streetName, city, province);
         return location;
     }
 }

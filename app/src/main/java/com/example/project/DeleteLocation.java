@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class DeleteLocation extends Activity{
 
     LocationDBHelper locationDBHelper;
-    ArrayList<Integer> locationList;
+    ArrayList<String> locationList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -21,9 +21,9 @@ public class DeleteLocation extends Activity{
         setContentView(R.layout.activity_delete_location);
 
         locationDBHelper = new LocationDBHelper(this);
-        locationList = new ArrayList<>(locationDBHelper.getAllLocationID());
+        locationList = new ArrayList<>(locationDBHelper.getAllLocationNames());
 
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, locationList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, locationList);
 
         final Spinner location_spinner = (Spinner)findViewById(R.id.location_spinner);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

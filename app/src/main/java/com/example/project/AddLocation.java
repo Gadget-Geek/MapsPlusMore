@@ -10,8 +10,11 @@ import android.widget.EditText;
 
 public class AddLocation extends Activity {
 
-    public double latitude;
-    public double longitude;
+    public int streetNumber;
+    public String streetName;
+    public String city;
+    public String province;
+    public String nameOfLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -27,13 +30,22 @@ public class AddLocation extends Activity {
 
                 Intent intent = new Intent(AddLocation.this, MapsActivity.class);
 
-                EditText get_lat = (EditText)findViewById(R.id.insert_lat_edit);
-                latitude = Double.parseDouble(get_lat.getText().toString());
+                EditText getStreetNum = (EditText)findViewById(R.id.insert_street_num);
+                streetNumber = Integer.parseInt(getStreetNum.getText().toString());
 
-                EditText get_long = (EditText)findViewById(R.id.insert_long_edit);
-                longitude = Double.parseDouble(get_long.getText().toString());
+                EditText getStreetName = (EditText)findViewById(R.id.insert_street_name);
+                streetName = getStreetName.getText().toString();
 
-                locationDBHelper.addNewLocation(latitude, longitude);
+                EditText getCity = (EditText)findViewById(R.id.insert_city);
+                city = getCity.getText().toString();
+
+                EditText getProvince = (EditText)findViewById(R.id.insert_province);
+                province = getProvince.getText().toString();
+
+                EditText getNameOfLocation = (EditText)findViewById(R.id.insert_name_address);
+                nameOfLocation = getNameOfLocation.getText().toString();
+
+                locationDBHelper.addNewLocation(nameOfLocation, streetNumber, streetName, city, province);
 
                 finish();
                 startActivity(intent);

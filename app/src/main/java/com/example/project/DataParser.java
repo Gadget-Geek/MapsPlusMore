@@ -1,5 +1,4 @@
 package com.example.project;
-
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
