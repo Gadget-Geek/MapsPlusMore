@@ -19,6 +19,7 @@ public class DeleteLocation extends Activity{
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_location);
+        setTitle("Delete Location");
 
         locationDBHelper = new LocationDBHelper(this);
         locationList = new ArrayList<>(locationDBHelper.getAllLocationNames());
@@ -39,6 +40,13 @@ public class DeleteLocation extends Activity{
 
                 finish();
                 startActivity(intent);
+            }
+        });
+        Button cancel = (Button)findViewById(R.id.cancel_btn);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }

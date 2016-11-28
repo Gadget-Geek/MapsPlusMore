@@ -10,7 +10,7 @@ import android.widget.EditText;
 
 public class AddLocation extends Activity {
 
-    public int streetNumber;
+    public int streetNumber = 0;
     public String streetName;
     public String city;
     public String province;
@@ -20,8 +20,15 @@ public class AddLocation extends Activity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_location);
+        setTitle("Add Location");
 
         final LocationDBHelper locationDBHelper = new LocationDBHelper(this);
+
+        final EditText getStreetNum = (EditText)findViewById(R.id.insert_street_num);
+        final EditText getStreetName = (EditText)findViewById(R.id.insert_street_name);
+        final EditText getCity = (EditText)findViewById(R.id.insert_city);
+        final EditText getProvince = (EditText)findViewById(R.id.insert_province);
+        final EditText getNameOfLocation = (EditText)findViewById(R.id.insert_name_address);
 
         Button addLocation = (Button)findViewById(R.id.add_btn);
         addLocation.setOnClickListener(new View.OnClickListener() {
@@ -30,25 +37,24 @@ public class AddLocation extends Activity {
 
                 Intent intent = new Intent(AddLocation.this, MapsActivity.class);
 
-                EditText getStreetNum = (EditText)findViewById(R.id.insert_street_num);
                 streetNumber = Integer.parseInt(getStreetNum.getText().toString());
-
-                EditText getStreetName = (EditText)findViewById(R.id.insert_street_name);
                 streetName = getStreetName.getText().toString();
-
-                EditText getCity = (EditText)findViewById(R.id.insert_city);
                 city = getCity.getText().toString();
-
-                EditText getProvince = (EditText)findViewById(R.id.insert_province);
                 province = getProvince.getText().toString();
-
-                EditText getNameOfLocation = (EditText)findViewById(R.id.insert_name_address);
                 nameOfLocation = getNameOfLocation.getText().toString();
 
                 locationDBHelper.addNewLocation(nameOfLocation, streetNumber, streetName, city, province);
 
                 finish();
                 startActivity(intent);
+            }
+        });
+
+        Button cancel = (Button)findViewById(R.id.cancel_btn);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }

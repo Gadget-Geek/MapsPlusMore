@@ -311,7 +311,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /*
     DISCLAIMER: Most of the methods from this point onwards as well as the DataParser.java class
-    was done using the help of many users from StackOverFlow. 
+    was done using the help of many users from StackOverFlow.
      */
 
     //Gets the Google Maps API URl set up to be downloaded.
