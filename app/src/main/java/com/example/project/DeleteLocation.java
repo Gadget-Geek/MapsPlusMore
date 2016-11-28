@@ -33,9 +33,9 @@ public class DeleteLocation extends Activity{
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DeleteLocation.this, MapsActivity.class);
                 locationDBHelper.deleteLocation(locationList.get(location_spinner.getSelectedItemPosition()));
-                startActivity(intent);
+
+                finish();
             }
         });
     }
